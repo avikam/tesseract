@@ -82,7 +82,9 @@ endif()
 if (UNIX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
 
-    set(LIB_pthread pthread)
+    if(NOT ANDROID)
+        set(LIB_pthread pthread)
+    endif()
 endif()
 
 ###############################################################################
@@ -112,6 +114,7 @@ find_package(OpenCL QUIET)
 
 option(BUILD_TRAINING_TOOLS "Build training tools" ON)
 option(BUILD_TESTS "Build tests" OFF)
+option(BUILD_CMD "Build command line tool" ON)
 
 ###############################################################################
 #
@@ -297,7 +300,9 @@ if (MSVC)
     set(tesseractmain_rsc ${CMAKE_BINARY_DIR}/vs2010/tesseract/tesseract.rc)
 endif()
 
-add_executable                  (tesseract ${tesseractmain_src} ${tesseractmain_rsc})
+if (BUILD_CMD)
+    add_executable                  (tesseract ${tesseractmain_src} ${tesseractmain_rsc})
+endif()
 target_link_libraries           (tesseract libtesseract)
 
 ########################################
@@ -317,7 +322,9 @@ get_target_property(tesseract_VERSION libtesseract VERSION)
 get_target_property(tesseract_OUTPUT_NAME libtesseract OUTPUT_NAME)
 configure_file(tesseract.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/tesseract.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/tesseract.pc DESTINATION lib/pkgconfig)
-install(TARGETS tesseract RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
+if (BUILD_CMD)
+    install(TARGETS tesseract RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
+endif()
 install(TARGETS libtesseract EXPORT TesseractTargets RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 install(EXPORT TesseractTargets DESTINATION cmake)
 install(FILES

@@ -108,7 +108,7 @@ bool File::DeleteMatchingFiles(const char* pattern) {
  }
  return all_deleted;
 }
-#else
+#elif !defined(ANDROID)
 bool File::DeleteMatchingFiles(const char* pattern) {
   glob_t pglob;
   char **paths;
